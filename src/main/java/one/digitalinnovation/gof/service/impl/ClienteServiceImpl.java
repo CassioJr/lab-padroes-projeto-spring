@@ -16,7 +16,7 @@ import one.digitalinnovation.gof.service.ViaCepService;
  * Implementação da <b>Strategy</b> {@link ClienteService}, a qual pode ser
  * injetada pelo Spring (via {@link Autowired}). Com isso, como essa classe é um
  * {@link Service}, ela será tratada como um <b>Singleton</b>.
- * 
+ *
  * @author falvojr
  */
 @Service
@@ -29,7 +29,7 @@ public class ClienteServiceImpl implements ClienteService {
 	private EnderecoRepository enderecoRepository;
 	@Autowired
 	private ViaCepService viaCepService;
-	
+
 	// Strategy: Implementar os métodos definidos na interface.
 	// Facade: Abstrair integrações com subsistemas, provendo uma interface simples.
 
@@ -42,8 +42,7 @@ public class ClienteServiceImpl implements ClienteService {
 	@Override
 	public Cliente buscarPorId(Long id) {
 		// Buscar Cliente por ID.
-		Optional<Cliente> cliente = clienteRepository.findById(id);
-		return cliente.get();
+		return clienteRepository.findById(id).orElseThrow();
 	}
 
 	@Override
@@ -52,12 +51,14 @@ public class ClienteServiceImpl implements ClienteService {
 	}
 
 	@Override
-	public void atualizar(Long id, Cliente cliente) {
+	public void atualizar(Long id,Cliente cliente) {
 		// Buscar Cliente por ID, caso exista:
 		Optional<Cliente> clienteBd = clienteRepository.findById(id);
 		if (clienteBd.isPresent()) {
 			salvarClienteComCep(cliente);
+			return;
 		}
+		throw new RuntimeException("Cliente não foi encontrado");
 	}
 
 	@Override
